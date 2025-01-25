@@ -449,16 +449,6 @@ You:
    
    ```
 
-   ```bash
-   git clone https://github.com/username/project-name.git
-   
-   ```
-
-   ```bash
-   git clone https://github.com/username/project-name.git
-   
-   ```
-
    **Clone the repository:**  
    ```bash
    git clone https://github.com/username/project-name.git
