@@ -1,14 +1,21 @@
 ﻿<div align="center">
 
-# 🌟 **Agentic Example** 🌟  
-_A short, catchy description of your project._
+#  **Agentic Example**   
+_This is an illustration of cdascientitst agentic prototype._
 
 ---
 
 ## 🔄 **Installation Steps**  
-Follow these steps to get started with the project:
+These instrctions are designed to illustrate an implementation of Agentic architecture and instructing Agents to use machine learning and machine learning results to formulate analysis:
 
  **Clone the repository:**  
+   ```bash
+   git clone https://github.com/username/project-name.git
+   cd project-name
+   ```
+
+
+   **Clone the repository:**  
    ```bash
    git clone https://github.com/username/project-name.git
    cd project-name
