@@ -17,7 +17,7 @@ These instrctions are designed to illustrate an implementation of Agentic archit
    + New notebook
    ```
    
-   **Copy and paste** 
+   **Copy and paste into Collab Terminal** 
    ```python
    #!/usr/bin/env python3
 import subprocess
@@ -381,6 +381,70 @@ def main():
 
 if __name__ == "__main__":
     main()
+   ```
+
+
+   **Automated Script to Create, Install, and Tunnle to a small LLM:** 
+   **We will 1-Install Ollama Engine, 2-Download TinyLlama Model, 3-Start The Model in Ollama Engine:**  
+   **Then... 4-Download and Install Ngrok, 5-Create Ngrok tunnle, 6-Bridge running TinyLlama Instance to tunnle:** 
+   **Then... 7-Ngrok Tunnel Created: https://___.app, 8-Verifying access to TinyLlama via https://__.app, 9-Installation complete. TinyLlama is accessible at https://_____.app**
+   ```bash
+   INFO:OllamaInstaller:✅ SUCCESS Ngrok token configured
+
+2025-01-25 16:43:50,392 - DEBUG - Killing any existing Ngrok processes
+
+DEBUG:OllamaInstaller:Killing any existing Ngrok processes
+
+2025-01-25 16:43:55,459 - INFO - Ngrok Tunnel Created: https://da31-34-74-128-6.ngrok-free.app
+
+INFO:OllamaInstaller:Ngrok Tunnel Created: https://da31-34-74-128-6.ngrok-free.app
+
+✅ SUCCESS Ngrok Tunnel Created: https://da31-34-74-128-6.ngrok-free.app
+2025-01-25 16:43:55,464 - INFO - ✅ SUCCESS Ngrok Tunnel Created: https://da31-34-74-128-6.ngrok-free.app
+
+INFO:OllamaInstaller:✅ SUCCESS Ngrok Tunnel Created: https://da31-34-74-128-6.ngrok-free.app
+
+2025-01-25 16:43:55,472 - DEBUG - Verifying access to TinyLlama via https://da31-34-74-128-6.ngrok-free.app
+
+DEBUG:OllamaInstaller:Verifying access to TinyLlama via https://da31-34-74-128-6.ngrok-free.app
+
+2025-01-25 16:44:25,606 - WARNING - Attempt 1 failed: HTTPSConnectionPool(host='da31-34-74-128-6.ngrok-free.app', port=443): Read timed out. (read timeout=30)
+
+WARNING:OllamaInstaller:Attempt 1 failed: HTTPSConnectionPool(host='da31-34-74-128-6.ngrok-free.app', port=443): Read timed out. (read timeout=30)
+
+2025-01-25 16:44:47,100 - INFO - TinyLlama model access verified
+
+INFO:OllamaInstaller:TinyLlama model access verified
+
+✅ SUCCESS TinyLlama model access verified
+2025-01-25 16:44:47,106 - INFO - ✅ SUCCESS TinyLlama model access verified
+
+INFO:OllamaInstaller:✅ SUCCESS TinyLlama model access verified
+
+2025-01-25 16:44:47,109 - INFO - Installation complete. TinyLlama is accessible at https://da31-34-74-128-6.ngrok-free.app
+
+INFO:OllamaInstaller:Installation complete. TinyLlama is accessible at https://da31-34-74-128-6.ngrok-free.app
+
+✅ SUCCESS TinyLlama setup complete
+2025-01-25 16:44:47,112 - INFO - ✅ SUCCESS TinyLlama setup complete
+
+INFO:OllamaInstaller:✅ SUCCESS TinyLlama setup complete
+
+2025-01-25 16:44:47,115 - INFO - Starting chat session...
+
+INFO:OllamaInstaller:Starting chat session...
+
+
+=== TinyLlama Chat Session ===
+Type 'exit' to end the chat
+
+You: 
+   
+   ```
+
+   ```bash
+   git clone https://github.com/username/project-name.git
+   
    ```
 
    ```bash
