@@ -384,13 +384,15 @@ if __name__ == "__main__":
    ```
 
 
-   **Automated Script to Create, Install, and Tunnle to a small LLM:** 
+   **Automated Script will Create, Install, and Tunnle to a small LLM. This is the Output:** 
    ```bash
-   Example installation:
-   **Automated Script to Create, Install, and Tunnle to a small LLM:
+   Description:
+
+   **Automated Script to Create, Install, and Tunnle to a small LLM using NGROK:
    **We will 1-Install Ollama Engine, 2-Download TinyLlama Model, 3-Start The Model in Ollama Engine:
    **Then... 4-Download and Install Ngrok, 5-Create Ngrok tunnle, 6-Bridge running TinyLlama Instance to tunnle:
    **Then... 7-Ngrok Tunnel Created: https://___.app, 8-Verifying access to TinyLlama via https://__.app, 9-Installation complete. TinyLlama is accessible at https://_____.app
+
 
    **Example Output:
    INFO:OllamaInstaller:✅ SUCCESS Ngrok token configured
