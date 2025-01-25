@@ -1,7 +1,7 @@
 ﻿<div align="center">
 
 #  **Agentic Example**   
-_This is an illustration of cdascientitst's use of agentic to facilitate analysis between agents of Machine Learning Output prototype._
+_This is an illustration of cdascientitst's use of an agentic framework to facilitate analysis between agents of Machine Learning Output._
 
 ---
 
@@ -17,7 +17,7 @@ These instrctions are designed to illustrate an implementation of Agentic archit
    + New notebook
    ```
    
-   **Copy and paste to: Install of Ollama, Download and install TinyLlama, Download and install NGROK, Create a tunnle to TinyLlama through NGROK, Paste into Collab Terminal** 
+   **Copy and paste to: Install of Ollama, Download and install TinyLlama, Download and install NGROK, Create a tunnle to TinyLlama through NGROK** 
    ```python
    #!/usr/bin/env python3
 import subprocess
@@ -388,8 +388,8 @@ if __name__ == "__main__":
    ```bash
    Description:
 
-   **Automated Script to Create, Install, and Tunnle to a small LLM using NGROK:
-   **We will 1-Install Ollama Engine, 2-Download TinyLlama Model, 3-Start The Model in Ollama Engine:
+   **Automated Script to Created, Installed, and Tunnle to a small LLM using NGROK:
+   **We will 1-Install Ollama Engine, 2-Download TinyLlama Model, 3-Start The Model Ollama Engine:
    **Then... 4-Download and Install Ngrok, 5-Create Ngrok tunnle, 6-Bridge running TinyLlama Instance to tunnle:
    **Then... 7-Ngrok Tunnel Created: https://___.app, 8-Verifying access to TinyLlama via https://__.app, 9-Installation complete. TinyLlama is accessible at https://_____.app
 
@@ -449,13 +449,32 @@ You:
    
    ```
 
-   **Clone the repository:**  
-   ```bash
-   git clone https://github.com/username/project-name.git
-   cd project-name
+   **Install Dependency:**  
+   ```Powershell
+Install-Package AutoGen
+Install-Package Accord
+Install-Package Accord.MachineLearning
+Install-Package Accord.Math
+Install-Package Accord.Statistics
+Install-Package Microsoft.AspNet.WebApi.Core
+Install-Package Microsoft.AspNetCore.Cors
+Install-Package Microsoft.AspNetCore.OpenApi -Version 8.0.1
+Install-Package Microsoft.AspNetCore.SpaProxy
+Install-Package Microsoft.EntityFrameworkCore
+Install-Package Microsoft.EntityFrameworkCore.InMemory
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+Install-Package Newtonsoft.Json
+Install-Package NumSharp
+Install-Package SciSharp.TensorFlow.Redist
+Install-Package Swashbuckle.AspNetCore
+Install-Package Swashbuckle.AspNetCore.Swagger
+Install-Package System.Net.Http
+Install-Package System.Text.Json
+Install-Package TensorFlow.NET
    ```
 
-    **Clone the repository:**  
+   **Clone the repository:**  
    ```bash
    git clone https://github.com/username/project-name.git
    cd project-name
