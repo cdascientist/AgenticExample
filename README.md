@@ -455,7 +455,13 @@ You:
    cd project-name
    ```
 
- **Install dependencies:**  
+    **Clone the repository:**  
+   ```bash
+   git clone https://github.com/username/project-name.git
+   cd project-name
+   ```
+
+      
    ```bash
    npm install
    ```
