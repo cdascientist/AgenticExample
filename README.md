@@ -469,6 +469,7 @@ Install-Package Swashbuckle.AspNetCore.Swagger
 Install-Package System.Net.Http
 Install-Package System.Text.Json
 Install-Package TensorFlow.NET
+Install-Package Microsoft.SemanticKernel 
    ```
       
 ### Rendered Example
@@ -490,6 +491,8 @@ namespace HelloWorld
     }
 }
 ```
+
+
 
    ```bash
    npm install
