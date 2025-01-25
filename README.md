@@ -470,13 +470,6 @@ Install-Package System.Net.Http
 Install-Package System.Text.Json
 Install-Package TensorFlow.NET
    ```
-
-   **Clone the repository:**  
-   ```bash
-   git clone https://github.com/username/project-name.git
-   cd project-name
-   ```
-
       
 ### Rendered Example
 
