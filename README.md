@@ -1,7 +1,7 @@
 ﻿<div align="center">
 
 #  **Agentic Example**   
-_This is an illustration of cdascientitst's scientific method and development of an agentic prototype._
+_This is an illustration of cdascientitst's use of agentic to facilitate analysis between agents of Machine Learning Output prototype._
 
 ---
 
