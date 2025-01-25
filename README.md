@@ -1,7 +1,11 @@
 ﻿<div align="center">
 
-#  **Agentic Example**   
+#  **.Net Agentic Abstract Analysis Framework**   
 _This is an illustration of cdascientitst's use of an agentic framework to facilitate analysis between agents of Machine Learning Output._
+ **Download Project**  
+   ```bash
+   https://github.com/cdascientist/AgenticExample.git
+   ```
 
 ---
 
