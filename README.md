@@ -1,19 +1,30 @@
 ﻿<div align="center">
 
 #  **Agentic Example**   
-_This is an illustration of cdascientitst agentic prototype._
+_This is an illustration of cdascientitst's scientific method and development of an agentic prototype._
 
 ---
 
 ## 🔄 **Installation Steps**  
 These instrctions are designed to illustrate an implementation of Agentic architecture and instructing Agents to use machine learning and machine learning results to formulate analysis:
 
- **Clone the repository:**  
+ **Lets generate a temporary agentic Framework**  
    ```bash
-   git clone https://github.com/username/project-name.git
-   cd project-name
+   https://colab.research.google.com/
+   ```
+   
+   ```bash
+   + New notebook
    ```
 
+   ```python
+   + New notebook
+   ```
+
+   ```bash
+   git clone https://github.com/username/project-name.git
+   
+   ```
 
    **Clone the repository:**  
    ```bash
