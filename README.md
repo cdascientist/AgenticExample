@@ -8,18 +8,18 @@ _A short, catchy description of your project._
 ## 🔄 **Installation Steps**  
 Follow these steps to get started with the project:
 
-1. **Clone the repository:**  
+ **Clone the repository:**  
    ```bash
    git clone https://github.com/username/project-name.git
    cd project-name
    ```
 
-2. **Install dependencies:**  
+ **Install dependencies:**  
    ```bash
    npm install
    ```
 
-3. **Start the development server:**  
+ **Start the development server:**  
    ```bash
    npm run dev
    ```
