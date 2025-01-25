@@ -17,7 +17,7 @@ These instrctions are designed to illustrate an implementation of Agentic archit
    + New notebook
    ```
    
-   **Copy and paste into Collab Terminal** 
+   **Copy and paste to: Install of Ollama, Download and install TinyLlama, Download and install NGROK, Create a tunnle to TinyLlama through NGROK, Paste into Collab Terminal** 
    ```python
    #!/usr/bin/env python3
 import subprocess
@@ -384,7 +384,7 @@ if __name__ == "__main__":
    ```
 
 
-   **Automated Script will Create, Install, and Tunnle to a small LLM. This is the Output:** 
+   **Automated Script Output after Creating, Installing, and Tunnling to a small LLM:** 
    ```bash
    Description:
 
