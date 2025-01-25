@@ -5,10 +5,31 @@ _A short, catchy description of your project._
 
 ---
 
+## 🔄 **Installation Steps**  
+Follow these steps to get started with the project:
+
+1. **Clone the repository:**  
+   ```bash
+   git clone https://github.com/username/project-name.git
+   cd project-name
+   ```
+
+2. **Install dependencies:**  
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**  
+   ```bash
+   npm run dev
+   ```
+
+---
+
 ## 🚀 **Features**  
-- ✨ Feature 1: Brief description.  
-- 🛠️  Feature 2: Brief description.  
-- 🛠️ Feature 3: Brief description.  
+ ✨ Feature 1: Brief description.  
+ 🛠️  Feature 2: Brief description.  
+ 🛠️ Feature 3: Brief description.  
 
 ---
 
