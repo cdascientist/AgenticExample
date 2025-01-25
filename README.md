@@ -395,7 +395,8 @@ if __name__ == "__main__":
 
 
    **Example Output:
-   INFO:OllamaInstaller:✅ SUCCESS Ngrok token configured
+
+INFO:OllamaInstaller:✅ SUCCESS Ngrok token configured
 
 2025-01-25 16:43:50,392 - DEBUG - Killing any existing Ngrok processes
 
