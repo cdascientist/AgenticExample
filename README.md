@@ -478,6 +478,26 @@ Install-Package TensorFlow.NET
    ```
 
       
+### Rendered Example
+
+Here's how the above snippet will appear when rendered:
+
+```csharp
+// This is a simple C# example
+using System;
+
+namespace HelloWorld
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+```
+
    ```bash
    npm install
    ```
