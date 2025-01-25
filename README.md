@@ -19,6 +19,13 @@ Follow these steps to get started with the project:
    npm install
    ```
 
+### Install Code
+```javascript
+export const add = (a, b) => a + b;
+```
+
+
+
  **Start the development server:**  
    ```bash
    npm run dev
