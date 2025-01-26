@@ -17,8 +17,8 @@ namespace AgenticExample
             var totalTimer = System.Diagnostics.Stopwatch.StartNew();
             System.Diagnostics.Debug.WriteLine($"Application Start: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
 
-            var factory = new PhaseFactory();
             var orchestrator = new PhaseOrchestrator();
+            var factory = new PhaseFactory(orchestrator);
 
             var phaseOne = factory.CreatePhase("PhaseOne", API_KEY);
             var phaseTwo = factory.CreatePhase("PhaseTwo", API_KEY);
@@ -41,24 +41,34 @@ namespace AgenticExample
         }
     }
 
+    public class AnalysisResult
+    {
+        public List<TradingPeriod> TopPeriods { get; set; }
+        public string Analysis { get; set; }
+        public Dictionary<string, double> Confidence { get; set; }
+    }
+
+    public class TradingPeriod
+    {
+        public int ClusterIndex { get; set; }
+        public double Price { get; set; }
+        public string PeakTime { get; set; }
+        public double ActivityPercentage { get; set; }
+    }
+
     public class TinyLlamaResponse
     {
         public string model_id { get; set; }
         public string created_at { get; set; }
         public string response { get; set; }
         public bool done { get; set; }
-        public Context context { get; set; }
-        public int total_duration { get; set; }
-        public int load_duration { get; set; }
-        public int prompt_eval_duration { get; set; }
-        public int eval_duration { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, object> context { get; set; }
+        public long total_duration { get; set; }
+        public long load_duration { get; set; }
+        public long prompt_eval_duration { get; set; }
+        public long eval_duration { get; set; }
         public float eval_count { get; set; }
-    }
-
-    public class Context
-    {
-        public List<string> history { get; set; }
-        public string system { get; set; }
     }
 
     public class AutoGenAgent
@@ -83,23 +93,70 @@ namespace AgenticExample
             var payload = new
             {
                 model = "tinyllama",
-                prompt = $@"[{name}|{role}]: Analyze the following time series data for Cluster {cluster.ClusterIndex + 1}:
-                          Average High: ${cluster.AverageHigh:F2}
-                          Time Range: {string.Join(", ", cluster.Times.Select(t => t.ToString("HH:mm:ss")))}
-                          Based on this data, what is the most probable time period for this average high to occur?",
+                prompt = $@"[{name}|{role}]: Analyze these intraday trading patterns:
+                          Period {cluster.ClusterIndex + 1}: ${cluster.AverageHigh:F2}
+                          Time Range: {string.Join(", ", cluster.Times.Select(t => t.ToString("hh:mm tt")))}
+
+                          Based strictly on this time series data:
+                          1. What time periods show the highest consistency?
+                          2. What are the key price-time relationships?
+                          3. Identify specific high-probability time windows
+                          4. Statistical correlation between time and price activity
+
+                          Provide a concise, data-driven analysis with no external factors or assumptions.",
                 stream = false
             };
 
-            var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"{ngrokUrl}/api/generate", content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-            var result = JsonConvert.DeserializeObject<TinyLlamaResponse>(await response.Content.ReadAsStringAsync(cancellationToken));
-            return result.response;
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, cancellationToken);
+
+                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync($"{ngrokUrl}/api/generate", content, linkedCts.Token);
+                response.EnsureSuccessStatusCode();
+
+                var jsonSettings = new JsonSerializerSettings
+                {
+                    Error = (sender, args) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine($"JSON Error: {args.ErrorContext.Error.Message}");
+                        args.ErrorContext.Handled = true;
+                    }
+                };
+
+                var result = JsonConvert.DeserializeObject<TinyLlamaResponse>(
+                    await response.Content.ReadAsStringAsync(linkedCts.Token),
+                    jsonSettings);
+
+                return result?.response ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Agent Error: {ex.Message}");
+                return string.Empty;
+            }
         }
     }
 
     public class PhaseOrchestrator
     {
+        private Dictionary<string, IPhase> phases = new Dictionary<string, IPhase>();
+
+        public IPhase GetPhase(string phaseName)
+        {
+            if (phases.TryGetValue(phaseName, out var phase))
+            {
+                return phase;
+            }
+            return null;
+        }
+
+        public void RegisterPhase(string phaseName, IPhase phase)
+        {
+            phases[phaseName] = phase;
+        }
+
         public async Task<ClusterResults> ExecutePhase(IPhase phase)
         {
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -228,7 +285,7 @@ namespace AgenticExample
                 {
                     System.Diagnostics.Debug.WriteLine($"Cluster {group.ClusterIndex + 1}:");
                     System.Diagnostics.Debug.WriteLine($"  Average High: ${group.AverageHigh:F2}");
-                    System.Diagnostics.Debug.WriteLine($"  Times: {string.Join(", ", group.Times.Select(t => t.ToString("HH:mm:ss")))}");
+                    System.Diagnostics.Debug.WriteLine($"  Times: {string.Join(", ", group.Times.Select(t => t.ToString("hh:mm tt")))}");
                     System.Diagnostics.Debug.WriteLine("-------------------");
                 }
 
@@ -249,10 +306,14 @@ namespace AgenticExample
     public class PhaseTwo : BasePhase
     {
         private readonly AutoGenAgent agent;
+        private readonly ProgressBar progressBar;
+        private readonly PhaseOrchestrator orchestrator;
 
-        public PhaseTwo(string apiKey) : base(apiKey)
+        public PhaseTwo(string apiKey, PhaseOrchestrator orchestrator) : base(apiKey)
         {
+            this.orchestrator = orchestrator;
             agent = new AutoGenAgent("Agent1", "Research Assistant", Program.LLAMA_URL);
+            progressBar = new ProgressBar(100);
         }
 
         public override async Task<ClusterResults> ExecuteAsync()
@@ -268,12 +329,92 @@ namespace AgenticExample
 
                 if (clusterResults?.Clusters != null)
                 {
+                    var allProbabilities = new List<(int clusterIndex, double avgHigh, TimeSpan hour, double frequency)>();
+                    var analysisResult = new AnalysisResult
+                    {
+                        TopPeriods = new List<TradingPeriod>(),
+                        Confidence = new Dictionary<string, double>()
+                    };
+
                     foreach (var cluster in clusterResults.Clusters)
                     {
-                        var prediction = await agent.PredictHighProbabilityPeriod(cluster, cancellationToken);
-                        System.Diagnostics.Debug.WriteLine($"Cluster {cluster.ClusterIndex + 1} Probability Analysis:");
-                        System.Diagnostics.Debug.WriteLine($"LLM Response: {prediction}");
+                        var timeGroups = cluster.Times
+                            .GroupBy(t => new TimeSpan(t.Hour, 0, 0))
+                            .Select(g => new
+                            {
+                                Hour = g.Key,
+                                Frequency = (double)g.Count() / cluster.Times.Count,
+                                ClusterIndex = cluster.ClusterIndex,
+                                AvgHigh = cluster.AverageHigh
+                            });
+
+                        allProbabilities.AddRange(timeGroups.Select(g => (g.ClusterIndex, g.AvgHigh, g.Hour, g.Frequency)));
+
+                        for (int i = 0; i <= 100; i++)
+                        {
+                            progressBar.Update(i);
+                            await Task.Delay(20, cancellationToken);
+                        }
                     }
+
+                    System.Diagnostics.Debug.WriteLine("\nProbability Analysis Results:");
+                    System.Diagnostics.Debug.WriteLine("----------------------------------------");
+
+                    var orderedResults = allProbabilities
+                        .OrderByDescending(r => r.avgHigh)
+                        .ThenByDescending(r => r.frequency)
+                        .GroupBy(r => r.clusterIndex)
+                        .Take(3);
+
+                    foreach (var clusterGroup in orderedResults)
+                    {
+                        var topPeriod = clusterGroup
+                            .OrderByDescending(r => r.frequency)
+                            .First();
+
+                        var formattedTime = DateTime.Today.Add(topPeriod.hour).ToString("hh:mm tt");
+
+                        analysisResult.TopPeriods.Add(new TradingPeriod
+                        {
+                            ClusterIndex = topPeriod.clusterIndex + 1,
+                            Price = topPeriod.avgHigh,
+                            PeakTime = formattedTime,
+                            ActivityPercentage = topPeriod.frequency
+                        });
+
+                        analysisResult.Confidence[$"Cluster{topPeriod.clusterIndex + 1}"] =
+                            Math.Round(topPeriod.frequency * (topPeriod.avgHigh / allProbabilities.Max(x => x.avgHigh)) * 100, 2);
+
+                        System.Diagnostics.Debug.WriteLine($"Cluster {topPeriod.clusterIndex + 1}");
+                        System.Diagnostics.Debug.WriteLine($"   Price: ${topPeriod.avgHigh:F2}");
+                        System.Diagnostics.Debug.WriteLine($"   Peak Time: {formattedTime}");
+                        System.Diagnostics.Debug.WriteLine($"   Activity: {topPeriod.frequency:P1}");
+                        System.Diagnostics.Debug.WriteLine($"   Confidence: {analysisResult.Confidence[$"Cluster{topPeriod.clusterIndex + 1}"]:F1}%");
+                        System.Diagnostics.Debug.WriteLine("----------------------------------------");
+                    }
+
+                    var prompt = $@"[Agent1|Research Assistant]: Analyze these intraday trading patterns:
+                        {string.Join("\n", analysisResult.TopPeriods.Select(p =>
+                            $"Period {p.ClusterIndex}: ${p.Price:F2} at {p.PeakTime} ({p.ActivityPercentage:P1} activity)"))}
+
+                        Based strictly on this intraday time series data:
+                        1. What time periods show the highest consistency?
+                        2. What are the key price-time relationships?
+                        3. Identify specific high-probability time windows
+                        4. Statistical correlation between time and price activity
+
+                        Provide a concise, data-driven analysis with no external factors or assumptions.";
+
+                    var analysis = await agent.PredictHighProbabilityPeriod(
+                        new ClusterGroup { Times = new List<DateTime>() }, cancellationToken) ??
+                        "Analysis unavailable - using statistical patterns only.";
+
+                    analysisResult.Analysis = analysis;
+
+                    System.Diagnostics.Debug.WriteLine("\nPattern Analysis:");
+                    System.Diagnostics.Debug.WriteLine(analysis);
+
+                    ((PhaseFour)orchestrator.GetPhase("PhaseFour")).SetAnalysisResult(analysisResult);
                 }
 
                 System.Diagnostics.Debug.WriteLine($"Phase Two Complete: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
@@ -283,6 +424,10 @@ namespace AgenticExample
             {
                 System.Diagnostics.Debug.WriteLine($"Phase Two Error: {ex.Message}");
                 return false;
+            }
+            finally
+            {
+                progressBar.Dispose();
             }
         }
     }
@@ -319,13 +464,25 @@ namespace AgenticExample
 
     public class PhaseFour : BasePhase
     {
+        private AnalysisResult analysisResult;
+
         public PhaseFour(string apiKey) : base(apiKey) { }
+
+        public void SetAnalysisResult(AnalysisResult result)
+        {
+            analysisResult = result;
+        }
 
         public override async Task<ClusterResults> ExecuteAsync()
         {
             await Task.Run(() =>
             {
                 System.Diagnostics.Debug.WriteLine($"Starting Phase Four: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+                if (analysisResult != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("\nFinal Analysis Results:");
+                    System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(analysisResult, Formatting.Indented));
+                }
                 Thread.Sleep(800);
                 System.Diagnostics.Debug.WriteLine($"Phase Four Complete: {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
             });
@@ -333,18 +490,60 @@ namespace AgenticExample
         }
     }
 
+    public class ProgressBar : IDisposable
+    {
+        private readonly int totalProgress;
+        private int currentProgress;
+        private readonly int barWidth;
+        private readonly string animation = "█";
+
+        public ProgressBar(int total, int width = 30)
+        {
+            totalProgress = total;
+            barWidth = width;
+            currentProgress = 0;
+        }
+
+        public void Update(int progress)
+        {
+            currentProgress = progress;
+            float percentage = (float)currentProgress / totalProgress;
+            int filled = (int)(barWidth * percentage);
+
+            System.Diagnostics.Debug.Write("\r[");
+            System.Diagnostics.Debug.Write(string.Concat(Enumerable.Repeat(animation, filled)));
+            System.Diagnostics.Debug.Write(string.Concat(Enumerable.Repeat(" ", barWidth - filled)));
+            System.Diagnostics.Debug.Write($"] {percentage:P0}");
+        }
+
+        public void Dispose()
+        {
+            System.Diagnostics.Debug.WriteLine("");
+        }
+    }
+
     public class PhaseFactory
     {
+        private readonly PhaseOrchestrator orchestrator;
+
+        public PhaseFactory(PhaseOrchestrator orchestrator)
+        {
+            this.orchestrator = orchestrator;
+        }
+
         public IPhase CreatePhase(string phaseType, string apiKey)
         {
-            return phaseType switch
+            IPhase phase = phaseType switch
             {
                 "PhaseOne" => new PhaseOne(apiKey),
-                "PhaseTwo" => new PhaseTwo(apiKey),
+                "PhaseTwo" => new PhaseTwo(apiKey, orchestrator),
                 "PhaseThree" => new PhaseThree(apiKey),
                 "PhaseFour" => new PhaseFour(apiKey),
                 _ => throw new ArgumentException("Invalid phase type")
             };
+
+            orchestrator.RegisterPhase(phaseType, phase);
+            return phase;
         }
     }
 }
